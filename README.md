@@ -91,6 +91,38 @@ python run.py
 http://127.0.0.1:8000/docs
 ```
 
+### Frontend com React + Vite
+
+O projeto agora possui um frontend separado em `frontend/`.
+
+1. Instale o Node.js 18+.
+
+2. Entre na pasta do frontend:
+
+```bash
+cd frontend
+```
+
+3. Instale as dependencias:
+
+```bash
+npm install
+```
+
+4. Rode o frontend:
+
+```bash
+npm run dev
+```
+
+5. Acesse:
+
+```
+http://127.0.0.1:5173
+```
+
+Durante o desenvolvimento, o Vite encaminha as requisicoes de `/filmes` para a API em `http://127.0.0.1:8000`.
+
 ## Endpoints disponíveis
 
 ### Criar filme
