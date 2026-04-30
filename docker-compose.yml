@@ -5,18 +5,23 @@ services:
       dockerfile: app/Dockerfile
     container_name: filmes_api
     environment:
-      DATABASE_URL: sqlite:///./filmes.db
+      DATABASE_URL: sqlite:////app/data/filmes.db
     ports:
       - "8000:8000"
     volumes:
-      - ./filmes.db:/app/filmes.db
-    command: sh -c "touch /app/filmes.db && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+      - ./data:/app/data
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
     restart: unless-stopped
-
-  sqlite:
-    image: keinos/sqlite3:latest
-    container_name: filmes_sqlite
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: filmes_frontend
+    ports:
+      - "5173:5173"
     volumes:
-      - ./filmes.db:/data/filmes.db
-    entrypoint: ["/bin/sh", "-c", "tail -f /dev/null"]
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - app
     restart: unless-stopped

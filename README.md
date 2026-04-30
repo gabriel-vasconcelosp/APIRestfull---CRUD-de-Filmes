@@ -41,12 +41,13 @@ A arquitetura segue a separação em camadas:
   - uvicorn 0.43.0
   - sqlalchemy 2.0.49
   - pydantic 2.12.5
+  - Node.js 18+
 
 ## Como executar
 
 ### Opção 1 (recomendada): Docker Compose
 
-1. Suba os serviços:
+1. Suba os serviços e o front-end:
 
 ```bash
 docker compose up --build
@@ -56,6 +57,12 @@ docker compose up --build
 
 ```
 http://127.0.0.1:8000/docs
+```
+
+3. Acesse o frontend (Já conectado a API):
+
+```
+http://127.0.0.1:5173
 ```
 
 ### Opção 2: Execução local (sem Docker)
