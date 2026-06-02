@@ -9,6 +9,12 @@ const initialForm = {
   nota: "",
 };
 
+function getNotaClass(nota) {
+  if (nota > 8) return "note-green";
+  if (nota >= 6) return "note-yellow";
+  return "note-red";
+}
+
 function MovieCard({ filme, onEdit, onDelete }) {
   return (
     <article className="movie-card">
@@ -17,7 +23,7 @@ function MovieCard({ filme, onEdit, onDelete }) {
           <h3>{filme.titulo}</h3>
           <p className="movie-card__meta">{filme.genero}</p>
         </div>
-        <span className="movie-card__note">{filme.nota}/10</span>
+        <span className={`movie-card__note ${getNotaClass(filme.nota)}`}>{filme.nota}/10</span>
       </div>
 
       <p className="movie-card__meta">Ano de lancamento: {filme.ano}</p>
@@ -163,6 +169,11 @@ export default function App() {
         </div>
 
         <div className="hero__card">
+          <div className="floating-icons" aria-hidden="true">
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/fastapi/fastapi-original.svg" alt="" className="icon-float fastapi" />
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" alt="" className="icon-float react" />
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vitejs/vitejs-original.svg" alt="" className="icon-float vite" />
+          </div>
           <span className="hero__badge">FastAPI + React + Vite</span>
           <p>Rode o backend na porta 8000 e o frontend na 5173 para desenvolver com recarregamento rapido.</p>
         </div>

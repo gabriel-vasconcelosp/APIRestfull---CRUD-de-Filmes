@@ -99,6 +99,54 @@ input {
     linear-gradient(160deg, rgba(181, 82, 51, 0.94), rgba(100, 39, 21, 0.94)),
     var(--panel);
   color: #fff8f3;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero__card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.floating-icons {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+}
+
+.icon-float {
+  opacity: 0.35;
+  animation: float-icon 5s ease-in-out infinite;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.25));
+}
+
+.icon-float.fastapi {
+  width: 70px;
+  animation-delay: 0s;
+}
+
+.icon-float.react {
+  width: 75px;
+  animation-delay: -1.5s;
+}
+
+.icon-float.vite {
+  width: 70px;
+  animation-delay: -3s;
+}
+
+@keyframes float-icon {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(8deg);
+  }
 }
 
 .hero__badge {
@@ -235,6 +283,21 @@ input:focus {
   background: var(--accent-soft);
   color: var(--accent-dark);
   font-weight: 700;
+}
+
+.movie-card__note.note-green {
+  background: rgba(31, 122, 77, 0.15);
+  color: var(--success);
+}
+
+.movie-card__note.note-yellow {
+  background: rgba(220, 161, 20, 0.2);
+  color: #9e7100;
+}
+
+.movie-card__note.note-red {
+  background: rgba(158, 42, 43, 0.15);
+  color: var(--danger);
 }
 
 .movie-card__meta {
