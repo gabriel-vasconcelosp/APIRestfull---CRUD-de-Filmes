@@ -45,7 +45,8 @@ export default function App() {
   const [formData, setFormData] = useState(initialForm);
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [feedback, setFeedback] = useState({ message: "", type: "" });
+  const [feedback, setFeedback] = useState({ message: "", type: "" })
+  const [busca, setBusca] = useState("");
 
   async function carregarFilmes() {
     setLoading(true);
@@ -154,8 +155,15 @@ export default function App() {
     }
   }
 
-  const empty = !loading && filmes.length === 0;
-  const formTitle = editingId ? `Editando: ${formData.titulo || "filme"}` : "Novo filme";
+  const filmesFiltrados = filmes.filter((filme) =>
+  filme.titulo.toLowerCase().includes(busca.toLowerCase())
+  );
+
+  const empty = !loading && filmesFiltrados.length === 0;
+
+  const formTitle = editingId
+  ? `Editando: ${formData.titulo || "filme"}`
+  : "Novo filme";
 
   return (
     <div className="page-shell">
@@ -271,6 +279,15 @@ export default function App() {
             </button>
           </div>
 
+          <div style={{ marginBottom: "20px" }}>
+            <input
+              type="text"
+              placeholder="Buscar filme pelo título..."
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+            />
+          </div>
+
           {loading && <div className="state-message">Carregando filmes...</div>}
           {empty && (
             <div className="state-message">
@@ -279,7 +296,7 @@ export default function App() {
           )}
 
           <div className="movies-grid">
-            {filmes.map((filme) => (
+            {filmesFiltrados.map((filme) => (
               <MovieCard key={filme.id} filme={filme} onEdit={handleEdit} onDelete={handleDelete} />
             ))}
           </div>
