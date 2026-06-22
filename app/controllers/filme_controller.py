@@ -1,29 +1,27 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from app.database.connection import SessionLocal
+from app.database.connection import SessionLocal, get_db
 from app.schemas.filme_schema import FilmeCreate
 from app.services import filme_service
 from fastapi import APIRouter, Depends, HTTPException
+from app.models.usuario_model import Usuario
+from app.security import get_current_user
 
 router = APIRouter()
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+
 
 @router.post("/filmes")
-def criar_filme(filme: FilmeCreate, db: Session = Depends(get_db)):
+def criar_filme(filme: FilmeCreate, db: Session = Depends(get_db), current_user: Usuario = Depends(get_current_user)):
+    filme.usuario = current_user.username
     return filme_service.criar(db, filme)
 
 @router.get("/filmes")
-def listar_filmes(db: Session = Depends(get_db)):
-    return filme_service.listar(db)
+def listar_filmes(db: Session = Depends(get_db), current_user: Usuario = Depends(get_current_user)):
+    return filme_service.listar(db, current_user.username)
 
 @router.get("/filmes/{filme_id}")
-def obter_filme(filme_id: int, db: Session = Depends(get_db)):
+def obter_filme(filme_id: int, db: Session = Depends(get_db), current_user: Usuario = Depends(get_current_user)):
     filme = filme_service.obter(db, filme_id)
     
     if not filme:
@@ -32,7 +30,7 @@ def obter_filme(filme_id: int, db: Session = Depends(get_db)):
     return filme
 
 @router.delete("/filmes/{filme_id}")
-def deletar_filme(filme_id: int, db: Session = Depends(get_db)):
+def deletar_filme(filme_id: int, db: Session = Depends(get_db), current_user: Usuario = Depends(get_current_user)):
     filme = filme_service.deletar(db, filme_id)
     
     if not filme:
@@ -40,9 +38,9 @@ def deletar_filme(filme_id: int, db: Session = Depends(get_db)):
     
     return filme
 
-"""Tratativa de erro adicionada - valida se o filme existe antes de seguir com o update"""
 @router.put("/filmes/{filme_id}")
-def atualizar_filme(filme_id: int, filme: FilmeCreate, db: Session = Depends(get_db)):
+def atualizar_filme(filme_id: int, filme: FilmeCreate, db: Session = Depends(get_db), current_user: Usuario = Depends(get_current_user)):
+    filme.usuario = current_user.username
     filme = filme_service.atualizar(db, filme_id, filme)
     
     if not filme: 

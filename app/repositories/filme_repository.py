@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import desc
 from app.models.filme_model import Filme
 
 def criar_filme(db: Session, filme):
@@ -8,8 +9,10 @@ def criar_filme(db: Session, filme):
     db.refresh(novo_filme)
     return novo_filme
 
-def listar_filmes(db: Session):
-    return db.query(Filme).all()
+def listar_filmes(db: Session, usuario: str = None):
+    if usuario:
+        return db.query(Filme).filter(Filme.usuario == usuario).order_by(desc(Filme.id)).all()
+    return db.query(Filme).order_by(desc(Filme.id)).all()
 
 def obter_filme (db:Session, filme_id: int):
     return db.query(Filme).get(filme_id)

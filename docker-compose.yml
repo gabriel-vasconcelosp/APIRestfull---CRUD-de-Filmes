@@ -4,6 +4,8 @@ services:
       context: .
       dockerfile: app/Dockerfile
     container_name: filmes_api
+    env_file:
+      - .env
     environment:
       DATABASE_URL: sqlite:////app/data/filmes.db
     ports:
@@ -17,6 +19,8 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: filmes_frontend
+    environment:
+      - VITE_API_URL=http://app:8000
     ports:
       - "5173:5173"
     volumes:

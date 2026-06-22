@@ -3,8 +3,8 @@ from app.repositories import filme_repository
 def criar(db, filme):
     return filme_repository.criar_filme(db, filme)
 
-def listar(db):
-    return filme_repository.listar_filmes(db)
+def listar(db, usuario=None):
+    return filme_repository.listar_filmes(db, usuario)
 
 def obter(db, filme_id):
     return filme_repository.obter_filme(db, filme_id)

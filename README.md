@@ -1,241 +1,113 @@
-﻿# API de Cadastro de Filmes
+# Catálogo de Filmes (Full-Stack)
 
-## Visão geral
+## Visão Geral
 
-Este projeto é uma API REST para gerenciar filmes com as operações básicas de CRUD:
-- criar filme
-- listar filmes
-- obter filme por ID
-- atualizar filme
-- deletar filme
+Esta é uma aplicação **Full-Stack** segura e moderna para o gerenciamento de catálogos de filmes. O sistema oferece:
+- **Autenticação Segura (JWT):** Sistema de Login e Registro com senhas criptografadas via `bcrypt` e proteção de rotas via Bearer Tokens.
+- **Painel Analítico:** Gráficos interativos (`Recharts`) baseados no histórico do usuário.
+- **Busca Integrada:** Integração transparente com a API oficial do TMDB para busca de filmes, pôsteres e sinopses.
+- **Armazenamento Permanente:** Operações de CRUD integradas ao banco de dados SQLite.
 
-A aplicação foi escrita em Python usando FastAPI e salva os dados em um banco SQLite local.
+O Backend foi construído em Python com **FastAPI**, enquanto o Frontend utiliza **React.js** via Vite, entregando um design premium inspirado em plataformas de streaming (Dark Theme e UI Dinâmica).
 
-## Estrutura do projeto
+## Estrutura da Arquitetura
 
-A arquitetura segue a separação em camadas:
+O backend segue conceitos de **Clean Architecture**:
 
-- `app/controllers` → define rotas HTTP e trata requisições
-- `app/services` → coordena a lógica de negócio
-- `app/repositories` → acessa e manipula o banco de dados
-- `app/models` → define a estrutura da tabela de filmes
-- `app/schemas` → valida dados de entrada com Pydantic
-- `app/database` → configura a conexão com SQLite
-- `app/Dockerfile` → define a imagem Docker da aplicação FastAPI
-- `docker-compose.yml` → orquestra os serviços da aplicação e do ambiente SQLite para testes
+- `app/controllers` → Endpoints da API (Filmes, TMDB e Auth).
+- `app/services` → Regras de negócio, busca externa e geração de Tokens JWT.
+- `app/repositories` → Acesso ao banco de dados SQLite (SQLAlchemy).
+- `app/models` → Tabelas do Banco de Dados (`usuarios` e `filmes`).
+- `app/schemas` → Validação de entrada e saída (Pydantic).
+- `app/security.py` → Motor de Criptografia e middlewares de segurança.
 
-## Tecnologias
+## Tecnologias Utilizadas
 
-- Python
-- FastAPI 
-- SQLAlchemy 
-- SQLite
-- Uvicorn 
-- Docker
+- **Backend**: Python 3.11, FastAPI, SQLAlchemy, SQLite, Uvicorn, PyJWT, Passlib (Bcrypt).
+- **Frontend**: React 18, Vite, Recharts, React Router Dom, Iconify.
+- **Infraestrutura**: Docker Compose.
 
-## Requisitos
+## Configuração Obrigatória (.env)
 
-- Python 3.8+
-- Dependências do projeto:
-  - fastapi 0.135.3
-  - uvicorn 0.43.0
-  - sqlalchemy 2.0.49
-  - pydantic 2.12.5
-  - Node.js 18+
+O sistema exige uma chave da API do **The Movie Database (TMDB)** para buscar os dados dos filmes.
+Crie um arquivo chamado `.env` na raiz do projeto contendo:
+```env
+TMDB_API_KEY=sua_chave_de_acesso_aqui
+```
 
-## Como executar
+---
 
-### Opção 1 (recomendada): Docker Compose
+## Como Executar
 
-1. Suba os serviços e o front-end:
+### Opção 1: Via Docker Compose (Recomendado)
 
+Esta opção constrói as imagens isoladas e resolve toda a configuração automaticamente:
 ```bash
-docker compose up --build
+docker compose up --build -d
 ```
+- Acesse a Aplicação React: `http://localhost:5173`
+- Acesse a Documentação do FastAPI (Swagger): `http://localhost:8000/docs`
 
-2. Acesse a documentação automática:
+### Opção 2: Execução Local (Terminal Padrão)
 
-```
-http://127.0.0.1:8000/docs
-```
-
-3. Acesse o frontend (Já conectado a API):
-
-```
-http://127.0.0.1:5173
-```
-
-### Opção 2: Execução local (sem Docker)
-
-1. Crie e Ativa o ambiente:
-
-
+**1. Subindo o Backend (FastAPI)**
 ```bash
-# No Windons
+# Crie e ative seu ambiente virtual
 python -m venv .venv
-venv\Scripts\activate
+# (No Windows)
+.venv\Scripts\activate
 
-# No Linux\Mac
-python3 -m venv .venv
-source venv\bin\acitvate
-```
-
-2. Instale as dependências:
-
-```bash
+# Instale todas as dependências
 pip install -r requirements.txt
-```
 
-3. Rode o servidor:
-
-```bash
+# Inicie o servidor Python
 python run.py
 ```
 
-4. Acesse a documentação automática:
-
-```
-http://127.0.0.1:8000/docs
-```
-
-### Frontend com React + Vite
-
-O projeto agora possui um frontend separado em `frontend/`.
-
-1. Instale o Node.js 18+.
-
-2. Entre na pasta do frontend:
-
+**2. Subindo o Frontend (React)**
+Abra um novo terminal e navegue para a pasta `frontend/`:
 ```bash
 cd frontend
-```
-
-3. Instale as dependencias:
-
-```bash
 npm install
-```
-
-4. Rode o frontend:
-
-```bash
 npm run dev
 ```
 
-5. Acesse:
+*(O Vite encaminha automaticamente as rotas `/auth`, `/filmes` e `/tmdb` para o backend na porta 8000).*
 
-```
-http://127.0.0.1:5173
-```
+---
 
-Durante o desenvolvimento, o Vite encaminha as requisicoes de `/filmes` para a API em `http://127.0.0.1:8000`.
+## Estrutura do Banco de Dados (SQLite)
 
-## Endpoints disponíveis
+O banco local (`filmes.db`) possui duas tabelas principais:
 
-### Criar filme
+1. **`usuarios`**: 
+   - `id` (PK), `username` (Único), `password_hash` (Senhas criptografadas).
+2. **`filmes`**:
+   - `id` (PK), `titulo`, `genero`, `ano`, `nota` (0.0 a 10.0), `poster`, `usuario` (Dono do registro), `data_cadastro`.
 
-- Método: `POST`
-- Rota: `/filmes`
-- Corpo da requisição (JSON):
+---
 
-```json
-{
-  "titulo": "Vingadores",
-  "genero": "Ação",
-  "ano": 2012,
-  "nota": 9
-}
-```
+## Endpoints e Rotas da API
 
-### Listar filmes
+Todas as requisições privadas devem conter o cabeçalho HTTP: `Authorization: Bearer <seu_token_jwt>`.
 
-- Método: `GET`
-- Rota: `/filmes`
-- Retorna uma lista de filmes cadastrados.
+### Autenticação (`/auth`)
+- **`POST /auth/register`**: Cria um novo usuário.
+- **`POST /auth/login`**: Valida as credenciais e devolve um `access_token` JWT.
 
-### Obter filme por ID
+### Gerenciamento de Filmes (`/filmes`)
+- **`POST /filmes`**: Salva um novo filme. O proprietário é vinculado via Token JWT.
+- **`GET /filmes`**: Retorna a lista de filmes do usuário atual, ordenada do mais recente para o mais antigo.
+- **`PUT /filmes/{id}`**: Atualiza os dados de um filme específico.
+- **`DELETE /filmes/{id}`**: Remove o registro do filme.
 
-- Método: `GET`
-- Rota: `/filmes/{filme_id}`
-- Retorna os dados do filme identificado pelo ID.
-- Retorna `404 Not Found` se o filme não existir.
+### Buscador TMDB (`/tmdb`)
+- **`GET /tmdb/search?query=...`**: Faz uma requisição segura para o TMDB, mapeia os metadados (como tradução de gêneros) e devolve a lista pronta para o React.
 
-### Atualizar filme
-
-- Método: `PUT`
-- Rota: `/filmes/{filme_id}`
-- Substitui os dados do filme existente pelo conteúdo enviado.
-- Valida se o filme existe antes de aplicar a atualização e retorna `404` quando não encontrado.
-
-### Deletar filme
-
-- Método: `DELETE`
-- Rota: `/filmes/{filme_id}`
-- Remove o registro do filme com o ID informado.
-- Retorna `404` se o filme não existir.
-
-## Modelagem do dado
-
-O modelo de filme usa os campos:
-
-- `id`: inteiro, chave primária
-- `titulo`: string
-- `genero`: string
-- `ano`: inteiro
-- `nota`: inteiro (0 a 10)
-
-A validação do campo `nota` é aplicada no schema do Pydantic em `app/schemas/filme_schema.py`.
-
-## Banco de dados
-
-- Banco: SQLite
-- Arquivo gerado: `filmes.db`
-- Tabela: `filmes`
-
-O banco é criado automaticamente ao iniciar a aplicação por meio de `Base.metadata.create_all(bind=engine)` em `app/main.py`.
-
-## Tratamento de erros
-
-- `GET /filmes/{filme_id}` retorna `404` quando o filme não é encontrado.
-- `PUT /filmes/{filme_id}` valida se o filme existe antes de atualizar e retorna `404` quando não encontrado.
-- `DELETE /filmes/{filme_id}` retorna `404` quando o filme não é encontrado.
-- `POST /filmes` e `PUT /filmes/{filme_id}` validam os dados de entrada.
-
-## Imagens e exemplos visuais
-
-A pasta `images/` contém capturas de tela das operações da API e exemplos de respostas:
-
-- `Criando filme(POST).png`
-- `Criando-filme-_POST-ERROR_.png`
-- `Listando filme(GET).png`
-- `Atualizando-filme_PUT_.png`
-- `Deletando-filme_DELETE_.png`
-- `Deletando-filme_DELETE-ERROR_.png`
-- `image.png`
-
-### Galeria de imagens
-
-<img src="images/Criando filme(POST).png" alt="Criando filme POST" width="600">
-
-<img src="images/Listando filme(GET).png" alt="Listando filmes GET" width="600">
-
-<img src="images/Atualizando-filme_PUT_.png" alt="Atualizando filme PUT" width="600">
-
-<img src="images/Deletando-filme_DELETE_.png" alt="Deletando filme DELETE" width="600">
-
-<img src="images/Criando-filme-_POST-ERROR_.png" alt="Erro ao criar filme POST" width="600">
-
-<img src="images/Deletando-filme_DELETE-ERROR_.png" alt="Erro ao deletar filme DELETE" width="600">
-
-## Observações
-
-- A API não possui autenticação.
-- O foco é demonstrar o fluxo básico de CRUD com FastAPI e SQLAlchemy.
+---
 
 ## Autores
-
 Projeto desenvolvido por:
-
 - Bruno Ferreira da Costa - 1240114845
 - Bruno Lourenço Queiroz da Silva - 1240120417
 - Carlos Augusto da Silva Souza - 1240101684

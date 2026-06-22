@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 
 from app.database.connection import engine, Base
-from app.controllers import filme_controller
+from app.controllers import filme_controller, tmdb_controller, auth_controller
 
 app = FastAPI()
 frontend_dir = Path(__file__).resolve().parent.parent / "frontend"
@@ -25,6 +25,8 @@ app.add_middleware(
 )
 
 app.include_router(filme_controller.router)
+app.include_router(tmdb_controller.router)
+app.include_router(auth_controller.router)
 
 if frontend_dist_dir.exists():
     assets_dir = frontend_dist_dir / "assets"

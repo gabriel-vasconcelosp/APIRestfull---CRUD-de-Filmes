@@ -4,11 +4,19 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: "127.0.0.1",
+    host: "0.0.0.0",
     port: 5173,
     proxy: {
       "/filmes": {
-        target: "http://app:8000",
+        target: process.env.VITE_API_URL || "http://127.0.0.1:8000",
+        changeOrigin: true,
+      },
+      "/tmdb": {
+        target: process.env.VITE_API_URL || "http://127.0.0.1:8000",
+        changeOrigin: true,
+      },
+      "/auth": {
+        target: process.env.VITE_API_URL || "http://127.0.0.1:8000",
         changeOrigin: true,
       },
     },
